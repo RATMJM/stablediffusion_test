@@ -18,42 +18,18 @@ export class MoviesService extends PrismaClient implements OnModuleInit {
   private movies: Movie[] = [];
   private users: UserInfo[];
 
-
-  // const mqtt = require("mqtt");
-  // const options = {
-  //   brokerName: 'mqttServer_Seoul_real',
-  //   host: '118.67.151.197',//device_log로 가 는듯?
-  //   port: 1883,
-  //   protocol: 'tcp',
-  //   // clientId: '51-2dd0947a-118c-464b-925e-caaa6ad708d1',    //  mqtt 구분자  
-  //   clientId: '801028b5-fe48-42c0-bb4f-44634926df64'
-  //   // clientId: '801028b5-fe48-42c0-bb4f-44634926df64' 
-
-  // };
-  // //브로커에 연결  
-  // const client = mqtt.connect(options);
-  // //   
-
-  // client.on("connect", () => {
-  //   console.log('coeenected');
-  //   client.subscribe('51/51-2dd0947a-118c-464b-925e-caaa6ad708d1', 2);
-
-  //   client.publish('51/51-2dd0947a-118c-464b-925e-caaa6ad708d1', "scheduleOff");
-
-  //   client.on('message', function (topic, message) {
+  
 
   async getAllUserInfo(userId: number): Promise<UserInfo[]> {
 
 
     const options = {
-      host: '118.67.151.197',//device_log로 가 는듯? 
+      host: '197',//device_log로 가 는듯? 
       // host: 'test.mosquitto.org',
-      port: 1883,
+      port: "",
       protocol: 'tcp',
-      connectTimeout: 4000,
-      // clientId: 'dacd7405-42e8-4739-8b3d-954a821ee0a7'   
-      // clientId: '801028b5-fe48-42c0-bb4f-44634926df64'       
-      clientId: '7427-948e23c9-18b6-4f64-b314-966486262fe71',
+      connectTimeout: 4000,    
+      clientId: '',
       userName: 'test',
       qos: '2',
       guid: '',
@@ -227,21 +203,19 @@ export class MoviesService extends PrismaClient implements OnModuleInit {
     // console.log('yesar' + this.contents);
     // const userIhistd = this.users.find((userinfo) => userinfo.userId === userId);
     const options = {
-      host: '118.67.151.197',//device_log로 가 는듯? 
+      host: '.197',//device_log로 가 는듯? 
       // host: 'test.mosquitto.org',
-      port: 1883,
+      port: "",
       protocol: 'tcp',
-      connectTimeout: 4000,
-      // clientId: 'dacd7405-42e8-4739-8b3d-954a821ee0a7' 
-      // clientId: '801028b5-fe48-42c0-bb4f-44634926df64'    ,
-      clientId: '7427-948e23c9-18b6-4f64-b314-966486262fe71',
+      connectTimeout: 4000, 
+      clientId: ' ',
       userName: 'test',
       guid: '',
     };
 
     const mqtt = require("mqtt");
     const client = mqtt.connect(options);
-    let topic = ['7427/7427-948e23c9-18b6-4f64-b314-966486262fe71/'];
+    let topic = [''];
     // let message = { "msgType": "refreshContents", "payload": "orderNumChange" }
     let message = { "msgType": "changeBrightness", "payload": "5" };
 
@@ -262,47 +236,7 @@ export class MoviesService extends PrismaClient implements OnModuleInit {
       // setInterval(() => client.publish(topic, JSON.stringify(message), 2, fal se), 2000);         
       client.publish(topic, toBytes(message), 2, false);
       console.log('mqtt-published!');
-    })
-    // client.getServerUrl();   
-    //      message 
-
-    const msg = '';
-    // msg, clientId, username , guid  
-    // var timer_id = setInterval(function () { publish(topic, message, options); }, 5000);     
-
-    // //publish function 
-    // function publish(topic, message, options) {
-    //   console.log("publishing", message + '  ' + topic);  
-    //   if (client.connected == true) {
-    //     client.publish(topic, JSON.stringify(message), 2, false); 
-    //   }
-
-    //   var count = 0;
-    //   count += 1;
-    //   if (count == 2) //ens script
-    //   {
-    //     clearTimeout(timer_id); //stop timer  
-    //     client.end(); 
-    //     console.log('지운다');
-    //   }
-    // }
-
-    //    
-
-    //   client.publish("51/51-2dd0947a-118c-464b-925e-caaa6ad708d1", { "msgType": "restartDevice" }, pub_options); 
-    // } else { 
-    //   console.log('err ' + err); 
-    // } 
-    // }); 
-
-    // let topic = 'test';       
-    // client.on("message", (topic, message) => {
-
-    //   console.log('topic: ' + topic + ' and messages: ' + message.toString())
-    //   // console.log(message.toString());
-    //   // client.end();
-
-    // });
+    }) 
 
     client.on("error", (error) => {
       console.log("Can't connect" + error);

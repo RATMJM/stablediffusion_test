@@ -28,7 +28,7 @@ export default function() {
     // "phone": `${randomPhoneNumGet()}`,
     // "loginId": randomStrGen(),
     // "password": randomStrGen()
-    "email": `awpgosu@gmail.com`,
+    "email": `@gmail.com`,
     "pwd": 1111
   });
   const params = {
