@@ -1,0 +1,2397 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model actionlog {
+  log_id      String    @id @db.VarChar(20)
+  log_type    String?   @db.VarChar(20)
+  log_message String?   @db.VarChar(200)
+  log_detail  String?   @db.VarChar(45)
+  registDt    DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model adjustmentdefer {
+  payDetailId   Int       @id @default(0)
+  defferComment String?   @db.VarChar(1000)
+  registDt      DateTime? @db.DateTime(0)
+  solveComment  String?   @db.VarChar(1000)
+  solveDt       DateTime? @db.DateTime(0)
+  registAdminId String?   @db.VarChar(50)
+  solveAdminId  String?   @db.VarChar(50)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model adjustmentfinish {
+  ajMonth          String    @default("") @db.VarChar(6)
+  payid            Int       @default(0)
+  payDetailId      Int       @default(0)
+  payMethod        String?   @db.VarChar(20)
+  payDate          DateTime? @db.DateTime(0)
+  price            Int?
+  pgFee            Int?
+  productClassCode String    @db.VarChar(10)
+  productClassName String?   @db.VarChar(100)
+  contentId        Int       @default(0)
+  title            String?   @db.VarChar(500)
+  authorId         Int       @default(0)
+  authorName       String?   @db.VarChar(200)
+  salesId          Int       @default(0)
+  businessName     String?   @db.VarChar(50)
+  businessType     String?   @db.VarChar(20)
+  sellerShareRatio Decimal   @default(0.00) @db.Decimal(5, 2)
+  userId           Int?      @default(0)
+  nickname         String?   @db.VarChar(20)
+  finishDt         DateTime? @db.DateTime(0)
+  sellerSharePrice Int?
+  businessEmail    String?   @db.VarChar(100)
+
+  @@id([ajMonth, payid, payDetailId])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model adjustmentmailsend {
+  ajMonth     String?   @db.VarChar(6)
+  salesId     Int
+  sendDt      DateTime? @db.DateTime(0)
+  sendAdminId String?   @db.VarChar(50)
+
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model admin {
+  adminId          String           @id @db.VarChar(20)
+  adminName        String?          @unique(map: "adminName_UNIQUE") @db.VarChar(45)
+  password         String?          @db.VarChar(200)
+  emailPassword    String?          @db.VarChar(200)
+  email            String?          @db.VarChar(100)
+  mobile           String?          @db.VarChar(45)
+  registDt         DateTime?        @db.DateTime(0)
+  suAdminYN        admin_suAdminYN?
+  menuAccessRoleId Int
+  passwordUpdateDt DateTime?        @db.DateTime(0)
+  delYn            String?          @db.VarChar(1)
+  delDt            DateTime?        @db.DateTime(0)
+  exhibition       exhibition[]
+  faq              faq[]
+  faq_lang         faq_lang[]
+  notice           notice[]
+  notice_lang      notice_lang[]
+  salesinfo        salesinfo[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model appversion {
+  id             Int       @id @default(autoincrement())
+  appName        String?   @db.VarChar(30)
+  appVersion     String?   @db.VarChar(45)
+  appCode        Int?
+  apkPath        String?   @db.VarChar(100)
+  appSize        Int?
+  registDt       DateTime? @db.DateTime(0)
+  androidVersion String?   @db.VarChar(20)
+  iosVersion     String?   @db.VarChar(20)
+  appKind        String?   @db.VarChar(45)
+  description    String?   @db.VarChar(5000)
+  device_type_id Int       @default(2)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model artpackagecontents {
+  artPackageId Int    @id @unique(map: "artPackageId_UNIQUE") @default(autoincrement())
+  contentId    Int
+  productCode  String @db.VarChar(10)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model attachfile {
+  fileId         Int       @id @default(autoincrement())
+  filePath       String?   @db.VarChar(255)
+  originFileName String?   @db.VarChar(100)
+  saveFileName   String?   @db.VarChar(100)
+  aws_path       String?   @db.VarChar(255)
+  fileSize       Int?
+  registDt       DateTime? @db.DateTime(0)
+  refTableName   String    @db.VarChar(50)
+  refId          Int
+  downloadPath   String?   @db.VarChar(255)
+  lang           String?   @db.VarChar(2)
+  aesKey         String?   @db.VarChar(64)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model auth_basic {
+  auth_id         BigInt            @id @default(autoincrement())
+  sort            Int
+  auth_name       String            @db.VarChar(100)
+  user_create     String            @default("N") @db.Char(1)
+  admin_assign    String            @default("N") @db.Char(1)
+  auth_manage     String            @default("N") @db.Char(1)
+  group_create    String            @default("N") @db.Char(1)
+  device_search   String            @default("N") @db.Char(1)
+  device_oper     String            @default("N") @db.Char(1)
+  device_edit     String            @default("N") @db.Char(1)
+  collection_edit String            @default("N") @db.Char(1)
+  schedule_edit   String            @default("N") @db.Char(1)
+  auth_service    auth_service[]
+  company_manager company_manager[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model auth_service {
+  auth_service_id BigInt          @id @default(autoincrement())
+  auth_id         BigInt
+  service_id      BigInt
+  sort            Int
+  auth_name       String          @db.VarChar(100)
+  user_create     String          @default("N") @db.Char(1)
+  admin_assign    String          @default("N") @db.Char(1)
+  auth_manage     String          @default("N") @db.Char(1)
+  group_create    String          @default("N") @db.Char(1)
+  device_search   String          @default("N") @db.Char(1)
+  device_oper     String          @default("N") @db.Char(1)
+  device_edit     String          @default("N") @db.Char(1)
+  collection_edit String          @default("N") @db.Char(1)
+  schedule_edit   String          @default("N") @db.Char(1)
+  use_yn          String          @default("Y") @db.Char(1)
+  auth_basic      auth_basic      @relation(fields: [auth_id], references: [auth_id], onUpdate: Restrict, map: "auth_service_FK")
+  company_service company_service @relation(fields: [service_id], references: [service_id], onUpdate: Restrict, map: "auth_service_FK_1")
+
+  @@index([auth_id], map: "auth_service_FK")
+  @@index([service_id], map: "auth_service_FK_1")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model authorinfo {
+  authorId       Int       @id @default(autoincrement())
+  salesId        Int
+  authorName     String?   @db.VarChar(200)
+  workHistory    String?   @db.Text
+  schoolHistory  String?   @db.Text
+  awardHistory   String?   @db.Text
+  birth          String?   @db.VarChar(8)
+  registDt       DateTime? @db.DateTime(0)
+  email          String?   @db.VarChar(100)
+  country        String?   @db.VarChar(45)
+  sex            String?   @db.VarChar(1)
+  finalSchool    String?   @db.VarChar(150)
+  graduateYear   String?   @db.VarChar(4)
+  businessKind   String?   @db.VarChar(20)
+  authorEngName  String?   @db.VarChar(200)
+  authorDesc     String?   @db.Text
+  profileImgName String?   @db.VarChar(100)
+  profileImgPath String?   @db.VarChar(255)
+  profileImgSize Int?
+  profileImgType String?   @db.VarChar(10)
+  snsFacebook    String?   @db.VarChar(100)
+  snsTwitter     String?   @db.VarChar(100)
+  snsInstagram   String?   @db.VarChar(100)
+  webSite        String?   @db.VarChar(100)
+  authorType     Int       @default(0)
+  salesinfo      salesinfo @relation(fields: [salesId], references: [salesId], onDelete: NoAction, onUpdate: NoAction, map: "fk_AuthorInfo_salesInfo1")
+
+  @@index([salesId], map: "fk_AuthorInfo_salesInfo1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model authorinfo_lang {
+  authorId      Int
+  lang          String    @default("") @db.VarChar(200)
+  authorName    String?   @db.VarChar(200)
+  workHistory   String?   @db.Text
+  schoolHistory String?   @db.Text
+  awardHistory  String?   @db.Text
+  authorDesc    String?   @db.Text
+  registDt      DateTime? @db.DateTime(0)
+  updDt         DateTime? @db.DateTime(0)
+  registAdminId String?   @db.VarChar(50)
+  updAdminId    String?   @db.VarChar(50)
+
+  @@id([authorId, lang])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model aution {
+  contentId        Int
+  autionId         Int                  @id @default(autoincrement())
+  virtualYN        aution_virtualYN?
+  startDt          DateTime?            @db.DateTime(0)
+  endDt            DateTime?            @db.DateTime(0)
+  registDt         DateTime?            @db.DateTime(0)
+  adminId          String?              @db.VarChar(20)
+  autionStateCode  String?              @db.VarChar(2)
+  autionBidderCode String?              @db.VarChar(2)
+  bidPrice         String?              @db.VarChar(20)
+  authorName       String?              @db.VarChar(200)
+  schoolHistory    String?              @db.VarChar(1000)
+  workHistory      String?              @db.Text
+  title            String?              @db.VarChar(100)
+  size             String?              @db.VarChar(100)
+  meterial         String?              @db.VarChar(45)
+  makeYear         String?              @db.VarChar(4)
+  bidInitPrice     String?              @db.VarChar(20)
+  bidUnitPrice     String?              @db.VarChar(20)
+  bidderId         Int?
+  bidderIdConf     aution_bidderIdConf?
+  catId            Int?
+  catName          String?              @db.VarChar(45)
+  birthYear        String?              @db.VarChar(20)
+  desc             String?              @db.VarChar(1000)
+  autionattachfile autionattachfile[]
+  biddinghistory   biddinghistory[]
+
+  @@index([contentId], map: "fk_aution_contents1_idx")
+}
+
+model autionattachfile {
+  autionAttachFileId Int       @id @default(autoincrement())
+  autionId           Int
+  filePath           String?   @db.VarChar(200)
+  thumbnailPath      String?   @db.VarChar(200)
+  orginFileNm        String?   @db.VarChar(200)
+  saveFileNm         String?   @db.VarChar(200)
+  fileSize           Int?
+  awsPath            String?   @db.VarChar(200)
+  awsThumbnailPath   String?   @db.VarChar(200)
+  registDt           DateTime? @db.DateTime(0)
+  aution             aution    @relation(fields: [autionId], references: [autionId], onDelete: NoAction, onUpdate: NoAction, map: "fk_autionAttachFile_aution1")
+
+  @@index([autionId], map: "fk_autionAttachFile_aution1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model banner {
+  bannerId    Int       @id @unique(map: "bannerId_UNIQUE") @default(autoincrement())
+  title       String?   @db.VarChar(100)
+  url         String?   @db.VarChar(255)
+  bannerOrder Int?
+  postType    String?   @db.VarChar(10)
+  registDt    DateTime? @db.DateTime(0)
+  adminId     String    @db.VarChar(20)
+  inventory   String?   @db.VarChar(10)
+  expYn       String?   @db.Char(1)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model banner_lang {
+  bannerId    Int
+  lang        String    @default("") @db.VarChar(200)
+  url         String?   @db.VarChar(255)
+  bannerOrder Int?
+  registDt    DateTime? @db.DateTime(0)
+  adminId     String    @db.VarChar(20)
+
+  @@id([bannerId, lang])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model bbscategory {
+  bbsCategoryCode String    @id @db.VarChar(4)
+  bbsCategoryName String    @db.VarChar(30)
+  registDt        DateTime? @db.DateTime(0)
+}
+
+model biddinghistory {
+  biddingHistoryId Int                      @id @default(autoincrement())
+  autionId         Int
+  userId           Int?
+  bidPrice         String?                  @db.VarChar(20)
+  bidDt            DateTime?                @db.DateTime(0)
+  bidderYN         biddinghistory_bidderYN?
+  aution           aution                   @relation(fields: [autionId], references: [autionId], onDelete: NoAction, onUpdate: NoAction, map: "fk_biddingHistory_aution1")
+
+  @@index([autionId], map: "fk_biddingHistory_aution1_idx")
+}
+
+model broker {
+  seq        Int     @id @default(autoincrement())
+  brokerName String? @db.VarChar(30)
+  brokerIp   String? @db.VarChar(20)
+  brokerPort String? @db.VarChar(10)
+  region     String? @db.VarChar(45)
+  clientIp   String? @db.VarChar(45)
+  isActive   String  @default("Y") @db.VarChar(100)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model cart {
+  cartId        Int       @id @unique(map: "cartId_UNIQUE") @default(autoincrement())
+  productType   String    @db.VarChar(20)
+  count         Int?
+  refId         String    @db.VarChar(20)
+  productOption String?   @db.VarChar(20)
+  userId        Int?
+  registDt      DateTime? @db.DateTime(0)
+  productClass  String?   @db.VarChar(6)
+  recommendCode String?   @db.VarChar(45)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model category {
+  catId           Int               @id @default(autoincrement())
+  catName         String?           @db.VarChar(45)
+  catNameKo       String?           @db.VarChar(45)
+  catNameEn       String?           @db.VarChar(45)
+  catNameJa       String?           @db.VarChar(45)
+  catNameZh       String?           @db.VarChar(45)
+  parentCatId     Int
+  catType         String?           @db.VarChar(20)
+  category        category          @relation("categoryTocategory", fields: [parentCatId], references: [catId], onDelete: NoAction, onUpdate: NoAction, map: "fk_category_category1")
+  other_category  category[]        @relation("categoryTocategory")
+  contents        contents[]
+  contents_230905 contents_230905[]
+
+  @@index([parentCatId], map: "fk_category_category1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model collection {
+  collection_id     BigInt    @id @default(autoincrement())
+  company_id        BigInt?
+  sort              Int       @default(0)
+  collection_name   String    @db.VarChar(100)
+  description       String?   @db.VarChar(1000)
+  max_size          BigInt?
+  reg_date          DateTime? @default(now()) @db.DateTime(0)
+  manage_type       String    @default("C") @db.Char(1)
+  manage_yn         String    @default("N") @db.Char(1)
+  manage_default_yn String    @default("N") @db.Char(1)
+  device            device[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model collection_mapping {
+  collection_mapping_id BigInt   @id @default(autoincrement())
+  collection_id         String   @db.VarChar(100)
+  content_file_id       Int
+  sort                  Int      @default(0)
+  limited_number        String?  @db.VarChar(30)
+  pay_kind              String?  @default("N") @db.VarChar(1)
+  reg_date              DateTime @default(now()) @db.DateTime(0)
+
+  @@index([collection_id], map: "collection_mapping_collection_id_IDX")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model comcode {
+  comCd      String            @db.VarChar(8)
+  dtlCd      String            @db.VarChar(50)
+  dtlNmKo    String?           @db.VarChar(500)
+  useYn      comcode_useYn?
+  regDt      DateTime?         @db.DateTime(0)
+  modDt      DateTime?         @db.DateTime(0)
+  orderBy    Int?              @db.SmallInt
+  hiddenYn   comcode_hiddenYn?
+  comcode_id Int?              @unique(map: "comcode_id_UNIQUE")
+
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model company {
+  company_id              BigInt            @id @unique(map: "companyId_UNIQUE") @default(autoincrement())
+  company_name            String            @db.VarChar(100)
+  business_number         String?           @db.VarChar(100)
+  business_number_file_id String?           @db.VarChar(100)
+  post_code               String?           @db.VarChar(100)
+  address                 String?           @db.VarChar(1000)
+  detail_address          String?           @db.VarChar(1000)
+  contract_file_id        String?           @db.VarChar(100)
+  status                  String            @default("W") @db.Char(1)
+  email                   String?           @db.VarChar(100)
+  email_send_yn           String            @default("N") @db.Char(1)
+  email_send_date         DateTime?         @db.DateTime(0)
+  reg_date                DateTime          @default(now()) @db.DateTime(0)
+  company_user            company_user[]
+  contents                contents[]
+  contents_230905         contents_230905[]
+  device                  device[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model company_edit_request {
+  company_id              BigInt   @id @unique(map: "companyId_UNIQUE")
+  company_name            String?  @db.VarChar(100)
+  business_number         String?  @db.VarChar(100)
+  business_number_file_id String?  @db.VarChar(100)
+  post_code               String?  @db.VarChar(100)
+  address                 String?  @db.VarChar(1000)
+  detail_address          String?  @db.VarChar(1000)
+  contract_file_id        String?  @db.VarChar(100)
+  manager_id              Int?
+  req_date                DateTime @default(now()) @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model company_license {
+  license_id      BigInt          @id @default(autoincrement())
+  service_id      BigInt
+  device_num      Int?
+  company_service company_service @relation(fields: [service_id], references: [service_id], onUpdate: Restrict, map: "company_license_FK")
+
+  @@index([service_id], map: "license_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model company_manager {
+  company_manager_id BigInt     @id @default(autoincrement())
+  auth_id            BigInt
+  user_id            Int
+  company_id         BigInt?
+  service_id         BigInt?    @default(0)
+  device_group_id    BigInt?    @default(0)
+  device_id          BigInt?    @default(0)
+  device_oper_id     BigInt?    @default(0)
+  reg_date           DateTime   @default(now()) @db.DateTime(0)
+  userinfo           userinfo   @relation(fields: [user_id], references: [userId], onUpdate: Restrict, map: "company_manager_FK")
+  auth_basic         auth_basic @relation(fields: [auth_id], references: [auth_id], onUpdate: Restrict, map: "company_manager_FK_1")
+
+  @@index([user_id], map: "company_manager_FK")
+  @@index([auth_id], map: "company_manager_FK_1")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model company_service {
+  service_id      BigInt            @id @default(autoincrement())
+  company_id      BigInt?
+  service_name    String            @db.VarChar(100)
+  description     String?           @db.VarChar(2000)
+  status          String            @default("N") @db.Char(1)
+  license_cnt     Int?              @default(0)
+  reg_date        DateTime          @default(now()) @db.DateTime(0)
+  auth_service    auth_service[]
+  company_license company_license[]
+
+  @@index([company_id], map: "service_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model company_user {
+  company_user_id BigInt   @id @default(autoincrement())
+  company_id      BigInt
+  user_id         Int
+  status          String   @default("W") @db.Char(1)
+  department_name String?  @db.VarChar(100)
+  class_name      String?  @db.VarChar(100)
+  device_purpose  String?  @db.VarChar(100)
+  del_yn          String   @default("N") @db.Char(1)
+  company         company  @relation(fields: [company_id], references: [company_id], onUpdate: Restrict, map: "company_user_FK")
+  userinfo        userinfo @relation(fields: [user_id], references: [userId], onUpdate: Restrict, map: "company_user_FK_1")
+
+  @@index([company_id], map: "company_user_FK")
+  @@index([user_id], map: "company_user_FK_1")
+}
+
+model config {
+  seq           Int     @id @default(autoincrement())
+  specialSaleYN String? @default("N") @db.VarChar(1)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model consult_info {
+  seq             Int       @id @default(autoincrement())
+  consult_name    String?   @db.VarChar(20)
+  consult_phone   String?   @db.VarChar(30)
+  consult_email   String?   @db.VarChar(100)
+  consult_content String?   @db.VarChar(1000)
+  regist_dt       DateTime? @db.DateTime(0)
+  consult_type    String?   @db.VarChar(20)
+  consult_tel     String?   @db.VarChar(30)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model contents {
+  contentId             Int                     @id @default(autoincrement())
+  userId                Int?
+  companyId             BigInt?
+  contentFromSns        String?                 @db.VarChar(1)
+  registDt              DateTime?               @db.DateTime(0)
+  copyrightYn           String?                 @db.VarChar(1)
+  licenseType           String?                 @db.VarChar(20)
+  contentInfo           String?                 @db.Text
+  recommendOrder        Int?
+  catId                 Int
+  likeCnt               Int?                    @default(0)
+  commentCnt            Int?                    @default(0)
+  downloadCnt           Int?                    @default(0)
+  visible               contents_visible?       @default(Y)
+  publicYN              contents_publicYN?      @default(N)
+  title                 String?                 @db.VarChar(500)
+  size                  String?                 @db.VarChar(100)
+  pixel                 String?                 @db.VarChar(32)
+  meterial              String?                 @db.VarChar(100)
+  makeYear              String?                 @db.VarChar(4)
+  contentsDesc          String?                 @db.Text
+  contentRegistType     String                  @default("") @db.VarChar(2)
+  reportContentYN       String?                 @default("N") @db.VarChar(1)
+  contentAuthYN         String?                 @default("Y") @db.VarChar(1)
+  viewCnt               Int?                    @default(0)
+  authorId              Int?
+  confirmYN             contents_confirmYN?
+  confirmYnReason       String?                 @db.VarChar(100)
+  sourceURL             String?                 @db.VarChar(255)
+  copyrightDesc         String?                 @db.VarChar(400)
+  hiddenHashtag         String?                 @db.VarChar(500)
+  similarHashtag        String?                 @db.VarChar(1000)
+  authAdminId           String?                 @db.VarChar(20)
+  rejectReason          String?                 @db.VarChar(1000)
+  authDt                DateTime?               @db.DateTime(0)
+  reportReason          String?                 @db.VarChar(1000)
+  brandYN               String?                 @default("N") @db.VarChar(2)
+  artworkYn             String?                 @default("Y") @db.VarChar(1)
+  nftTokenId            String?                 @db.VarChar(63)
+  company               company?                @relation(fields: [companyId], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "contents_FK")
+  userinfo              userinfo?               @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_Contents_UserInfo1")
+  category              category                @relation(fields: [catId], references: [catId], onDelete: NoAction, onUpdate: NoAction, map: "fk_contents_category1")
+  contentscomment       contentscomment[]
+  contentsfile          contentsfile[]
+  contentsfile_copy     contentsfile_copy[]
+  contentslike          contentslike[]
+  contentsreport        contentsreport[]
+  hashtag               hashtag[]
+  paycontent            paycontent[]
+  paycontent_20221028_1 paycontent_20221028_1[]
+  paycontent_20230821   paycontent_20230821[]
+  paycontent_230905     paycontent_230905[]
+  paycontent_complete   paycontent_complete[]
+
+  @@index([companyId], map: "contents_FK")
+  @@index([authorId], map: "contents_authorId_IDX")
+  @@index([contentRegistType], map: "contents_contentRegistType_IDX")
+  @@index([registDt], map: "contents_registDt_IDX")
+  @@index([userId], map: "fk_Contents_UserInfo1_idx")
+  @@index([catId], map: "fk_contents_category1_idx")
+  @@index([nftTokenId], map: "nftTokenId")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model contents_230905 {
+  contentId         Int                        @id @default(autoincrement())
+  userId            Int?
+  companyId         BigInt?
+  contentFromSns    String?                    @db.VarChar(1)
+  registDt          DateTime?                  @db.DateTime(0)
+  copyrightYn       String?                    @db.VarChar(1)
+  licenseType       String?                    @db.VarChar(20)
+  contentInfo       String?                    @db.Text
+  recommendOrder    Int?
+  catId             Int
+  likeCnt           Int?                       @default(0)
+  commentCnt        Int?                       @default(0)
+  downloadCnt       Int?                       @default(0)
+  visible           contents_230905_visible?   @default(Y)
+  publicYN          contents_230905_publicYN?  @default(N)
+  title             String?                    @db.VarChar(500)
+  size              String?                    @db.VarChar(100)
+  pixel             String?                    @db.VarChar(32)
+  meterial          String?                    @db.VarChar(100)
+  makeYear          String?                    @db.VarChar(4)
+  contentsDesc      String?                    @db.Text
+  contentRegistType String                     @default("") @db.VarChar(2)
+  reportContentYN   String?                    @default("N") @db.VarChar(1)
+  contentAuthYN     String?                    @default("Y") @db.VarChar(1)
+  viewCnt           Int?                       @default(0)
+  authorId          Int?
+  confirmYN         contents_230905_confirmYN?
+  confirmYnReason   String?                    @db.VarChar(100)
+  sourceURL         String?                    @db.VarChar(255)
+  copyrightDesc     String?                    @db.VarChar(400)
+  hiddenHashtag     String?                    @db.VarChar(500)
+  similarHashtag    String?                    @db.VarChar(1000)
+  authAdminId       String?                    @db.VarChar(20)
+  rejectReason      String?                    @db.VarChar(1000)
+  authDt            DateTime?                  @db.DateTime(0)
+  reportReason      String?                    @db.VarChar(1000)
+  brandYN           String?                    @default("N") @db.VarChar(2)
+  artworkYn         String?                    @default("Y") @db.VarChar(1)
+  nftTokenId        String?                    @db.VarChar(63)
+  company           company?                   @relation(fields: [companyId], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "contents_230905_ibfk_1")
+  userinfo          userinfo?                  @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "contents_230905_ibfk_2")
+  category          category                   @relation(fields: [catId], references: [catId], onDelete: NoAction, onUpdate: NoAction, map: "contents_230905_ibfk_3")
+
+  @@index([companyId], map: "contents_FK")
+  @@index([authorId], map: "contents_authorId_IDX")
+  @@index([contentRegistType], map: "contents_contentRegistType_IDX")
+  @@index([registDt], map: "contents_registDt_IDX")
+  @@index([userId], map: "fk_Contents_UserInfo1_idx")
+  @@index([catId], map: "fk_contents_category1_idx")
+  @@index([nftTokenId], map: "nftTokenId")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model contents_lang {
+  contentId    Int
+  lang         String  @db.VarChar(200)
+  title        String? @db.VarChar(500)
+  meterial     String? @db.VarChar(100)
+  contentsDesc String? @db.Text
+  contentInfo  String? @db.Text
+
+  @@id([contentId, lang])
+}
+
+model contentscomment {
+  commentId   Int       @id @default(autoincrement())
+  contentId   Int
+  userId      Int
+  commentInfo String?   @db.VarChar(200)
+  registDt    DateTime? @db.DateTime(0)
+  contents    contents  @relation(fields: [contentId], references: [contentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_comment_contents1")
+  userinfo    userinfo  @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_comment_userinfo1")
+
+  @@index([contentId], map: "fk_comment_contents1_idx")
+  @@index([userId], map: "fk_comment_userinfo1_idx")
+}
+
+model contentsfile {
+  contentFileId    Int                   @id @default(autoincrement())
+  contentPath      String                @db.VarChar(500)
+  thumbnailPath    String                @db.VarChar(500)
+  contentId        Int
+  contentType      String?               @db.VarChar(20)
+  mimeType         String?               @db.VarChar(20)
+  originFileNm     String?               @db.VarChar(500)
+  saveFileNm       String?               @db.VarChar(100)
+  saveThumbFileNm  String?               @db.VarChar(100)
+  s3FileKey        String?               @db.VarChar(500)
+  uploadYN         contentsfile_uploadYN @default(Y)
+  contentFileSize  Int?
+  registDt         DateTime              @default(now()) @db.DateTime(0)
+  aesKey           String?               @db.VarChar(64)
+  nftTokenId       String?               @db.VarChar(64)
+  contents         contents              @relation(fields: [contentId], references: [contentId], onUpdate: Restrict, map: "fk_contentsPath_contentId_idx1")
+  eventproduct     eventproduct[]
+  mycollectionfile mycollectionfile[]
+
+  @@index([contentId], map: "contentId")
+  @@index([contentId], map: "fk_contentPath_contentId_idx1")
+}
+
+model contentsfile_copy {
+  contentFileId   Int                        @id @default(autoincrement())
+  contentPath     String                     @db.VarChar(500)
+  thumbnailPath   String                     @db.VarChar(500)
+  contentId       Int
+  contentType     String?                    @db.VarChar(20)
+  mimeType        String?                    @db.VarChar(20)
+  originFileNm    String?                    @db.VarChar(500)
+  saveFileNm      String?                    @db.VarChar(100)
+  saveThumbFileNm String?                    @db.VarChar(100)
+  s3FileKey       String?                    @db.VarChar(500)
+  uploadYN        contentsfile_copy_uploadYN @default(Y)
+  contentFileSize Int?
+  registDt        DateTime                   @default(now()) @db.DateTime(0)
+  aesKey          String?                    @db.VarChar(64)
+  nftTokenId      String?                    @db.VarChar(64)
+  contents        contents                   @relation(fields: [contentId], references: [contentId], onUpdate: Restrict, map: "contentsfile_copy_ibfk_1")
+
+  @@index([contentId], map: "fk_contentPath_contentId_idx1")
+}
+
+model contentslike {
+  likeId    Int       @id @default(autoincrement())
+  contentId Int
+  userId    Int
+  registDt  DateTime? @db.DateTime(0)
+  contents  contents  @relation(fields: [contentId], references: [contentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_like_contents1")
+  userinfo  userinfo  @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_like_userinfo1")
+
+  @@index([contentId], map: "fk_like_contents1_idx")
+  @@index([userId], map: "fk_like_userinfo1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model contentsreport {
+  reportId          Int       @id @default(autoincrement())
+  contentId         Int
+  reportReason      String?   @db.VarChar(1000)
+  reportUserId      Int?
+  reportDate        DateTime? @db.DateTime(0)
+  reportProcessCode String?   @db.VarChar(2)
+  reportProcessDate DateTime? @db.DateTime(0)
+  reportTypeCode    String?   @db.VarChar(20)
+  rejectReason      String?   @db.VarChar(1000)
+  contents          contents  @relation(fields: [contentId], references: [contentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_contentsReport_contents1")
+
+  @@index([contentId], map: "fk_contentsReport_contents1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model copyrightinfo {
+  copyrightId   String   @db.VarChar(20)
+  userId        Int
+  address       String?  @db.VarChar(100)
+  detailAddress String?  @db.VarChar(100)
+  mobileNumber  String?  @db.VarChar(20)
+  userAuthKey   String?  @db.VarChar(100)
+  userinfo      userinfo @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_CopyrightInfo_UserInfo1")
+
+  @@id([copyrightId, userId])
+  @@index([userId], map: "fk_CopyrightInfo_UserInfo1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model coupon {
+  couponId    Int       @id @unique(map: "couponId_UNIQUE")
+  productType String?   @db.VarChar(20)
+  useYn       String?   @default("N") @db.VarChar(1)
+  couponType  String?   @db.VarChar(20)
+  refId       String    @db.VarChar(20)
+  registDt    DateTime? @db.DateTime(0)
+  couponNum   String    @unique(map: "couponNum_UNIQUE") @db.VarChar(80)
+  userId      Int?
+  useDt       DateTime? @db.DateTime(0)
+  option1     String?   @db.VarChar(150)
+  payid       Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model defaultcontents {
+  defaultContentsId Int @id @unique(map: "defaultContentsId_UNIQUE") @default(autoincrement())
+  contentId         Int
+  catId             Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model device {
+  deviceId               Int                           @id @default(autoincrement())
+  deviceSn               String?                       @db.VarChar(45)
+  ipAddress              String?                       @db.VarChar(20)
+  macAddress             String?                       @db.VarChar(45)
+  wifiSsid               String?                       @db.VarChar(45)
+  wifiPassword           String?                       @db.VarChar(200)
+  wifiEncType            String?                       @db.VarChar(200)
+  registYn               String?                       @db.VarChar(1)
+  registDt               DateTime?                     @db.DateTime(0)
+  userId                 Int?
+  company_id             BigInt?
+  deviceWidth            String?                       @db.VarChar(20)
+  deviceHeight           String?                       @db.VarChar(20)
+  deviceName             String?                       @db.VarChar(100)
+  gcmRegId               String?                       @db.VarChar(200)
+  scheduleYN             device_scheduleYN?            @default(N)
+  showStartTime          String?                       @db.VarChar(10)
+  sleepStartTime         String?                       @db.VarChar(10)
+  slideShowInterval      Int?                          @default(10)
+  slideShowIntervalUnit  device_slideShowIntervalUnit? @default(sec)
+  slideShowAnimationType String?                       @default("fade") @db.VarChar(45)
+  connectYN              String?                       @default("N") @db.VarChar(1)
+  disconnectCnt          Int?
+  memoryTotal            Int?
+  memoryUsed             Int?
+  cpuTotalUsed           Int?
+  cpuAppUsed             Int?
+  cpuTemp                Int?
+  brightness             String?                       @default("255") @db.VarChar(45)
+  updateDate             DateTime?                     @db.DateTime(0)
+  contentsMax            BigInt?
+  appVersion             String?                       @db.VarChar(20)
+  appCode                Int?
+  scaleType              String?                       @default("FIT_CENTER") @db.VarChar(30)
+  deviceNum              Int?
+  mycollectionId         Int?
+  collectionId           BigInt?
+  bluetoothMacAddress    String?                       @db.VarChar(45)
+  timeZone               String?                       @default("Asia/Seoul") @db.VarChar(50)
+  appKind                String?                       @db.VarChar(45)
+  speaker                String?                       @db.VarChar(45)
+  orientation            Int                           @default(1) @db.UnsignedInt
+  matt                   Int?                          @default(0)
+  widget                 String?                       @db.VarChar(4000)
+  widget_v2              String?                       @default("{}") @db.VarChar(4000)
+  modelKind              String?                       @db.VarChar(45)
+  lifeInfoAlarm          String?                       @db.VarChar(4000)
+  latitude               String?                       @db.VarChar(300)
+  longitude              String?                       @db.VarChar(300)
+  daySetting             String?                       @db.VarChar(45)
+  brokerId               Int                           @default(2)
+  brokerUpdateDate       DateTime?                     @default(now()) @db.DateTime(0)
+  description            String?                       @db.VarChar(2000)
+  diskTotal              Int?
+  diskUsed               Int?
+  company                company?                      @relation(fields: [company_id], references: [company_id], onDelete: Restrict, onUpdate: Restrict, map: "device_FK")
+  collection             collection?                   @relation(fields: [collectionId], references: [collection_id], onDelete: Restrict, onUpdate: Restrict, map: "device_FK_1")
+  mycollections          mycollections?                @relation(fields: [mycollectionId], references: [mycollectionId], onDelete: NoAction, onUpdate: NoAction, map: "fk_Device_Mycollection1")
+  userinfo               userinfo?                     @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_Device_UserInfo1")
+
+  @@index([company_id], map: "device_FK")
+  @@index([collectionId], map: "device_FK_1")
+  @@index([mycollectionId], map: "fk_Device_Mycollection1")
+  @@index([userId], map: "fk_Device_UserInfo1_idx")
+  @@index([gcmRegId], map: "fk_Device_gcmRegId")
+  @@index([macAddress], map: "fk_Device_macAddress")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model device_group {
+  device_group_id    BigInt           @id @default(autoincrement())
+  service_id         BigInt?
+  user_id            Int?
+  parent_id          BigInt?
+  sort               Int              @default(0)
+  device_group_name  String?          @db.VarChar(100)
+  description        String?          @db.VarChar(2000)
+  device_group       device_group?    @relation("device_groupTodevice_group", fields: [parent_id], references: [device_group_id], onDelete: Restrict, onUpdate: Restrict, map: "device_group_FK_1")
+  other_device_group device_group[]   @relation("device_groupTodevice_group")
+  device_mapping     device_mapping[]
+
+  @@index([service_id], map: "device_group_FK")
+  @@index([parent_id], map: "device_group_FK_1")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model device_history {
+  device_hsitory_id BigInt   @id @default(autoincrement())
+  device_num        BigInt
+  device_id         BigInt?
+  sort              String   @default("1") @db.VarChar(100)
+  history_type      String   @db.VarChar(100)
+  description       String?  @db.VarChar(2000)
+  reg_user_id       String   @db.VarChar(100)
+  reg_date          DateTime @default(now()) @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model device_mapping {
+  device_mapping_id BigInt       @id @default(autoincrement())
+  device_group_id   BigInt
+  device_id         Int
+  sort              Int          @default(0)
+  device_group      device_group @relation(fields: [device_group_id], references: [device_group_id], onUpdate: Restrict, map: "device_mapping_FK")
+
+  @@index([device_group_id], map: "device_mapping_FK")
+  @@index([device_id], map: "device_mapping_device_id_IDX")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model device_shipping {
+  device_shipping_id     BigInt   @id @default(autoincrement())
+  device_num             Int
+  service_id             BigInt?
+  pay_id                 BigInt?
+  deliver_company_code   String   @default("01") @db.VarChar(100)
+  deliver_number         String?  @db.VarChar(100)
+  deliver_status         String   @default("00") @db.Char(2)
+  receive_name           String   @db.VarChar(200)
+  receive_tel            String   @db.VarChar(100)
+  receive_zip_code       String   @db.VarChar(50)
+  receive_address        String   @db.VarChar(500)
+  receive_detail_address String?  @db.VarChar(500)
+  receive_memo           String?  @db.VarChar(1000)
+  channel                String   @default("1") @db.VarChar(1)
+  reg_date               DateTime @default(now()) @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model device_type {
+  device_type_id    BigInt  @id @default(autoincrement())
+  sort              Int     @default(1)
+  device_type_name  String  @db.VarChar(100)
+  abbreviation      String  @db.VarChar(100)
+  resolution        String? @db.VarChar(100)
+  internal_angle    String? @db.VarChar(100)
+  external_angle    String? @db.VarChar(100)
+  thickness         String? @db.VarChar(100)
+  weight            String? @db.VarChar(100)
+  brightness        String? @db.VarChar(100)
+  power_consumption String? @db.VarChar(100)
+  etc               String? @db.VarChar(100)
+  template_ids      String? @db.VarChar(100)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model devicecs {
+  devicecsId   Int       @id @default(autoincrement())
+  userId       Int
+  userNickname String?   @db.VarChar(200)
+  userEmail    String?   @db.VarChar(200)
+  deviceSn     String?   @db.VarChar(45)
+  userName     String?   @db.VarChar(45)
+  phoneNumber  String?   @db.VarChar(15)
+  csContent    String?   @db.Text
+  adminId      String?   @db.VarChar(20)
+  replyContent String?   @db.Text
+  regDt        DateTime? @db.DateTime(0)
+  modDt        DateTime? @db.DateTime(0)
+  deleteYn     String?   @default("N") @db.VarChar(1)
+  deleteDt     DateTime? @db.DateTime(0)
+
+  @@index([userNickname(length: 191)], map: "deviceCs_deviceId")
+  @@index([userId], map: "deviceCs_userId")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model deviceinfo {
+  deviceNum        Int       @id @default(autoincrement())
+  deviceSn         String?   @db.VarChar(45)
+  macAddress       String?   @unique(map: "macAddress") @db.VarChar(45)
+  importDate       DateTime? @default(now()) @db.DateTime(0)
+  exportDate       DateTime? @db.DateTime(0)
+  settingDate      DateTime? @db.DateTime(0)
+  productStateCode String?   @default("00") @db.VarChar(2)
+  productCode      String?   @db.VarChar(10)
+  deviceNm         String?   @db.VarChar(100)
+  device_type_id   BigInt?   @default(2)
+  payId            Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model devicelog {
+  logId       Int       @id @default(autoincrement())
+  userId      Int
+  deviceId    Int
+  macAddress  String    @db.VarChar(45)
+  logFilePath String    @db.VarChar(255)
+  AWSFilePath String    @db.VarChar(255)
+  logFileSize Int
+  registDt    DateTime? @default(now()) @db.DateTime(0)
+
+  @@index([deviceId], map: "fk_deviceLog_device_idx_idx")
+  @@index([userId], map: "fk_deviceLog_userinfo_idx_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model devicescreencapture {
+  screenCaptureId   Int       @id @default(autoincrement())
+  userId            Int
+  deviceId          Int
+  macAddress        String    @db.VarChar(45)
+  screenFilePath    String    @db.VarChar(255)
+  AWSFilePath       String    @db.VarChar(255)
+  screenCaptureSize Int
+  registDt          DateTime? @default(now()) @db.DateTime(0)
+
+  @@index([deviceId], map: "fk_deviceScreenCapture_device_idx_idx")
+  @@index([userId], map: "fk_deviceScreenCapture_userinfo_idx_idx")
+}
+
+model emailcategory {
+  emailCategoryId   Int     @id @default(autoincrement())
+  emailCategoryName String? @db.VarChar(45)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model emailforms {
+  formCode        String       @id @db.VarChar(4)
+  formName        String?      @db.VarChar(100)
+  formFilePath    String?      @db.VarChar(255)
+  formFileSize    Int?
+  registDt        DateTime?    @db.DateTime(0)
+  saveFileName    String?      @db.VarChar(100)
+  originFileName  String?      @db.VarChar(100)
+  emailCategoryId Int?
+  mailregexp      mailregexp[]
+}
+
+model errorreport {
+  seq      Int       @id @default(autoincrement())
+  userId   Int
+  contents String?   @db.VarChar(1000)
+  registDt DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model eventproduct {
+  no               Int          @id @default(autoincrement())
+  contentFileId    Int
+  eventCode        String       @db.VarChar(50)
+  eventProductCode String?      @db.VarChar(45)
+  registDt         DateTime?    @default(now()) @db.DateTime(0)
+  contentsfile     contentsfile @relation(fields: [contentFileId], references: [contentFileId], onDelete: NoAction, onUpdate: NoAction, map: "eventProduct_contetnFileId")
+
+  @@index([contentFileId], map: "eventProduct_contentFileId_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model exhibition {
+  exhibitionId      Int       @id @default(autoincrement())
+  title             String?   @db.VarChar(100)
+  location          String?   @db.VarChar(45)
+  price             String?   @db.VarChar(45)
+  description       String?   @db.Text
+  authorNm          String?   @db.VarChar(100)
+  detailLocation    String?   @db.VarChar(100)
+  detailLocationUrl String?   @db.VarChar(200)
+  termDate          String?   @db.VarChar(50)
+  termTime          String?   @db.VarChar(50)
+  priceDetail       String?   @db.VarChar(500)
+  host              String?   @db.VarChar(100)
+  management        String?   @db.VarChar(100)
+  support           String?   @db.VarChar(100)
+  siteUrl           String?   @db.VarChar(200)
+  registDt          DateTime? @db.DateTime(0)
+  adminId           String    @db.VarChar(20)
+  readCnt           Int?
+  admin             admin     @relation(fields: [adminId], references: [adminId], onDelete: NoAction, onUpdate: NoAction, map: "fk_exhibition_admin1")
+
+  @@index([adminId], map: "fk_exhibition_admin1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model faq {
+  faqId        Int       @id @default(autoincrement())
+  faqQuestion  String?   @db.VarChar(200)
+  faqAnswer    String?   @db.Text
+  faqOrder     Int?
+  registDt     DateTime? @db.DateTime(0)
+  adminId      String    @db.VarChar(20)
+  categoryCode String?   @db.VarChar(4)
+  readCnt      Int?
+  bestYn       String?   @db.Char(1)
+  expYn        String?   @db.Char(1)
+  admin        admin     @relation(fields: [adminId], references: [adminId], onDelete: NoAction, onUpdate: NoAction, map: "fk_faq_admin1")
+
+  @@index([adminId], map: "fk_faq_admin1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model faq_lang {
+  faqId       Int
+  lang        String    @default("") @db.VarChar(200)
+  faqQuestion String?   @db.VarChar(200)
+  faqAnswer   String?   @db.Text
+  faqOrder    Int?
+  registDt    DateTime? @db.DateTime(0)
+  adminId     String    @db.VarChar(20)
+  admin       admin     @relation(fields: [adminId], references: [adminId], onDelete: NoAction, onUpdate: NoAction, map: "fk_faq_lang_admin1")
+
+  @@id([faqId, lang])
+  @@index([adminId], map: "fk_faq_lang_admin1_idx")
+}
+
+model follow {
+  followId                              Int       @id @default(autoincrement())
+  followerId                            Int
+  followingId                           Int
+  crossFollow                           String?   @db.VarChar(1)
+  registDt                              DateTime? @db.DateTime(0)
+  userinfo_follow_followerIdTouserinfo  userinfo  @relation("follow_followerIdTouserinfo", fields: [followerId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_follow_userinfo1")
+  userinfo_follow_followingIdTouserinfo userinfo  @relation("follow_followingIdTouserinfo", fields: [followingId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_follow_userinfo2")
+
+  @@index([followerId], map: "fk_follow_userinfo1_idx")
+  @@index([followingId], map: "fk_follow_userinfo2_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model hashtag {
+  hashTagId Int       @default(autoincrement())
+  tagName   String    @db.VarChar(100)
+  contentId Int?
+  registDt  DateTime? @db.DateTime(0)
+  authorId  Int?
+  contents  contents? @relation(fields: [contentId], references: [contentId], onDelete: NoAction, onUpdate: NoAction, map: "fk_HashTag_contents4")
+
+  @@id([hashTagId, tagName])
+  @@index([contentId], map: "fk_HashTag_contents4_idx")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model link_srma_smarthome {
+  loginId     String?   @db.VarChar(255)
+  apiLinkId   String?   @db.VarChar(50)
+  userId      Int?
+  companyCode String?   @db.VarChar(50)
+  aptDanji    String?   @default("") @db.VarChar(30)
+  aptDong     String?   @default("") @db.VarChar(30)
+  aptHo       String?   @default("") @db.VarChar(30)
+  apiLinkUrl  String?   @db.VarChar(255)
+  accessToken String?   @default("") @db.VarChar(64)
+  registDt    DateTime? @db.DateTime(0)
+  modifyDt    DateTime? @db.DateTime(0)
+
+  @@index([apiLinkId], map: "IDX_SRMA_APILINKID_01")
+  @@index([loginId], map: "IDX_SRMA_LOGINID_01")
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model loginhist {
+  loginDt   String  @db.VarChar(17)
+  sessionId String? @db.VarChar(200)
+  loginIP   String? @db.VarChar(200)
+  macAddr   String? @db.VarChar(200)
+  logOut    String? @db.VarChar(14)
+  adminId   String  @db.VarChar(40)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model loginhistfail {
+  loginDt   String  @db.VarChar(17)
+  sessionId String? @db.VarChar(200)
+  loginIP   String? @db.VarChar(200)
+  macAddr   String? @db.VarChar(200)
+  adminId   String? @db.VarChar(200)
+  failMsg   String? @db.VarChar(200)
+
+  @@ignore
+}
+
+model mailregexp {
+  id           Int        @id
+  formCode     String     @db.VarChar(4)
+  targetName   String?    @db.VarChar(45)
+  targetColumn String?    @db.VarChar(500)
+  targetTable  String?    @db.VarChar(500)
+  emailforms   emailforms @relation(fields: [formCode], references: [formCode], onDelete: NoAction, onUpdate: NoAction, map: "fk_mailRegexp_emailForms1")
+
+  @@index([formCode], map: "fk_mailRegexp_emailForms1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model menuaccessrole {
+  menuAccessRoleId   Int          @id @default(autoincrement())
+  accessRoleName     String?      @db.VarChar(45)
+  accessRoleRegistDt DateTime?    @db.DateTime(0)
+  menudetail         menudetail[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model menudetail {
+  menuDetailId     Int            @id @default(autoincrement())
+  menuName         String?        @db.VarChar(40)
+  menuUrlPattern   String?        @db.VarChar(50)
+  menuAccessRoleId Int
+  registDt         DateTime?      @db.DateTime(0)
+  menuaccessrole   menuaccessrole @relation(fields: [menuAccessRoleId], references: [menuAccessRoleId], onDelete: NoAction, onUpdate: NoAction, map: "menuDetail_ibfk_1")
+
+  @@index([menuAccessRoleId], map: "menuAccessRoleId")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model mycollectionfile {
+  mycollectionFileId  Int          @id @default(autoincrement())
+  contentFileId       Int
+  mycollectionId      Int
+  fileOrder           Int          @default(0)
+  limitedNumber       String?      @db.VarChar(30)
+  payKind             String?      @default("N") @db.VarChar(1)
+  registDt            DateTime?    @default(now()) @db.DateTime(0)
+  representative_flag String?      @default("N") @db.VarChar(1)
+  contentsfile        contentsfile @relation(fields: [contentFileId], references: [contentFileId], onDelete: NoAction, onUpdate: NoAction, map: "fk_mycollectionFile_contents")
+
+  @@index([contentFileId], map: "fk_mycollectionFile_contents_idx")
+  @@index([mycollectionId], map: "mycollectionfile_mycollectionId_IDX")
+  @@index([representative_flag], map: "representative_flag")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model mycollections {
+  mycollectionId  Int       @id @default(autoincrement())
+  collectionName  String    @default("기본컬렉션") @db.VarChar(150)
+  collectionOrder Int       @default(0)
+  userId          Int
+  description     String?   @db.VarChar(1000)
+  registDt        DateTime? @db.DateTime(0)
+  defaultYN       String    @default("N") @db.VarChar(1)
+  manageType      String    @default("U") @db.Char(1)
+  manageYn        String    @default("N") @db.Char(1)
+  manageDefaultYn String    @default("N") @db.Char(1)
+  collection_id   Int       @default(0)
+  device          device[]
+  userinfo        userinfo  @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_mycollections_userinfo")
+
+  @@index([userId], map: "fk_mycollections_userinfo_idx")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model newsapiinfo {
+  author      String? @db.VarChar(100)
+  title       String? @db.VarChar(150)
+  description String? @db.Text
+  url         String? @db.VarChar(500)
+  urlToImage  String? @db.VarChar(500)
+  publishedAt String? @db.VarChar(50)
+
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model notice {
+  noticeId     Int       @id @default(autoincrement())
+  title        String?   @db.VarChar(100)
+  content      String?   @db.Text
+  registDt     DateTime? @db.DateTime(0)
+  adminId      String    @db.VarChar(20)
+  readCnt      Int?
+  categoryCode String?   @db.VarChar(4)
+  expYn        String?   @db.Char(1)
+  videoUrl     String?   @db.VarChar(200)
+  admin        admin     @relation(fields: [adminId], references: [adminId], onDelete: NoAction, onUpdate: NoAction, map: "fk_notice_admin1")
+
+  @@index([adminId], map: "fk_notice_admin1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model notice_lang {
+  noticeId Int
+  lang     String    @default("") @db.VarChar(200)
+  title    String?   @db.VarChar(100)
+  content  String?   @db.Text
+  registDt DateTime? @db.DateTime(0)
+  adminId  String    @db.VarChar(20)
+  videoUrl String?   @db.VarChar(200)
+  admin    admin     @relation(fields: [adminId], references: [adminId], onDelete: NoAction, onUpdate: NoAction, map: "fk_notice_lang_admin1")
+
+  @@id([noticeId, lang])
+  @@index([adminId], map: "fk_notice_lang_admin1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model paycontent {
+  payContentId       Int       @id @unique(map: "payContentId_UNIQUE") @default(autoincrement())
+  rejectReason       String?   @db.VarChar(300)
+  payAuthDt          DateTime? @db.DateTime(0)
+  rejectDt           DateTime? @db.DateTime(0)
+  contentId          Int
+  authAdminId        Int?
+  streamingContentYN String?   @default("N") @db.VarChar(1)
+  streamingPayPrice  Int?
+  streamingCount     Int?
+  originContentYN    String?   @default("N") @db.VarChar(1)
+  originPayPrice     Int?
+  originCount        Int?
+  printContentYN     String?   @default("N") @db.VarChar(1)
+  printPayPrice      Int?
+  printCount         Int?
+  downloadContentYN  String?   @default("N") @db.VarChar(1)
+  downloadPayPrice   Int?
+  downloadCount      Int?
+  limitedContentYN   String?   @default("N") @db.VarChar(1)
+  limitedCount       Int?
+  limitedPayPrice    Int?
+  contents           contents  @relation(fields: [contentId], references: [contentId], onDelete: NoAction, onUpdate: NoAction, map: "paycontent_ibfk_1")
+
+  @@index([contentId], map: "fk_payContent_contents1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model paycontent_20221028_1 {
+  payContentId       Int       @id @unique(map: "payContentId_UNIQUE") @default(autoincrement())
+  rejectReason       String?   @db.VarChar(300)
+  payAuthDt          DateTime? @db.DateTime(0)
+  rejectDt           DateTime? @db.DateTime(0)
+  contentId          Int
+  authAdminId        Int?
+  streamingContentYN String?   @default("N") @db.VarChar(1)
+  streamingPayPrice  Int?
+  streamingCount     Int?
+  originContentYN    String?   @default("N") @db.VarChar(1)
+  originPayPrice     Int?
+  originCount        Int?
+  printContentYN     String?   @default("N") @db.VarChar(1)
+  printPayPrice      Int?
+  printCount         Int?
+  downloadContentYN  String?   @default("N") @db.VarChar(1)
+  downloadPayPrice   Int?
+  downloadCount      Int?
+  limitedContentYN   String?   @default("N") @db.VarChar(1)
+  limitedCount       Int?
+  limitedPayPrice    Int?
+  contents           contents  @relation(fields: [contentId], references: [contentId], onDelete: NoAction, onUpdate: NoAction, map: "paycontent_20221028_1_ibfk_1")
+
+  @@index([contentId], map: "fk_payContent_contents1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model paycontent_20230821 {
+  payContentId       Int       @id @unique(map: "payContentId_UNIQUE") @default(autoincrement())
+  rejectReason       String?   @db.VarChar(300)
+  payAuthDt          DateTime? @db.DateTime(0)
+  rejectDt           DateTime? @db.DateTime(0)
+  contentId          Int
+  authAdminId        Int?
+  streamingContentYN String?   @default("N") @db.VarChar(1)
+  streamingPayPrice  Int?
+  streamingCount     Int?
+  originContentYN    String?   @default("N") @db.VarChar(1)
+  originPayPrice     Int?
+  originCount        Int?
+  printContentYN     String?   @default("N") @db.VarChar(1)
+  printPayPrice      Int?
+  printCount         Int?
+  downloadContentYN  String?   @default("N") @db.VarChar(1)
+  downloadPayPrice   Int?
+  downloadCount      Int?
+  limitedContentYN   String?   @default("N") @db.VarChar(1)
+  limitedCount       Int?
+  limitedPayPrice    Int?
+  contents           contents  @relation(fields: [contentId], references: [contentId], onDelete: NoAction, onUpdate: NoAction, map: "paycontent_20230821_ibfk_1")
+
+  @@index([contentId], map: "fk_payContent_contents1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model paycontent_230905 {
+  payContentId       Int       @id @unique(map: "payContentId_UNIQUE") @default(autoincrement())
+  rejectReason       String?   @db.VarChar(300)
+  payAuthDt          DateTime? @db.DateTime(0)
+  rejectDt           DateTime? @db.DateTime(0)
+  contentId          Int
+  authAdminId        Int?
+  streamingContentYN String?   @default("N") @db.VarChar(1)
+  streamingPayPrice  Int?
+  streamingCount     Int?
+  originContentYN    String?   @default("N") @db.VarChar(1)
+  originPayPrice     Int?
+  originCount        Int?
+  printContentYN     String?   @default("N") @db.VarChar(1)
+  printPayPrice      Int?
+  printCount         Int?
+  downloadContentYN  String?   @default("N") @db.VarChar(1)
+  downloadPayPrice   Int?
+  downloadCount      Int?
+  limitedContentYN   String?   @default("N") @db.VarChar(1)
+  limitedCount       Int?
+  limitedPayPrice    Int?
+  contents           contents  @relation(fields: [contentId], references: [contentId], onDelete: NoAction, onUpdate: NoAction, map: "paycontent_230905_ibfk_1")
+
+  @@index([contentId], map: "fk_payContent_contents1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model paycontent_complete {
+  payContentId       Int       @id @unique(map: "payContentId_UNIQUE") @default(autoincrement())
+  rejectReason       String?   @db.VarChar(300)
+  payAuthDt          DateTime? @db.DateTime(0)
+  rejectDt           DateTime? @db.DateTime(0)
+  contentId          Int
+  authAdminId        Int?
+  streamingContentYN String?   @default("N") @db.VarChar(1)
+  streamingPayPrice  Int?
+  streamingCount     Int?
+  originContentYN    String?   @default("N") @db.VarChar(1)
+  originPayPrice     Int?
+  originCount        Int?
+  printContentYN     String?   @default("N") @db.VarChar(1)
+  printPayPrice      Int?
+  printCount         Int?
+  downloadContentYN  String?   @default("N") @db.VarChar(1)
+  downloadPayPrice   Int?
+  downloadCount      Int?
+  limitedContentYN   String?   @default("N") @db.VarChar(1)
+  limitedCount       Int?
+  limitedPayPrice    Int?
+  contents           contents  @relation(fields: [contentId], references: [contentId], onDelete: NoAction, onUpdate: NoAction, map: "paycontent_complete_ibfk_1")
+
+  @@index([contentId], map: "fk_payContent_contents1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model paycontentslog {
+  seq       Int      @id @unique(map: "seq_UNIQUE") @default(autoincrement())
+  regDate   DateTime @db.DateTime(0)
+  paykind   String?  @db.VarChar(45)
+  userId    Int
+  contentId Int
+  memo      String?  @db.VarChar(250)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model paydetail {
+  payDetailId          Int       @id @default(autoincrement())
+  payid                Int
+  productOption        String?   @db.VarChar(100)
+  productName          String?   @db.VarChar(100)
+  count                Int?
+  price                Int?
+  payStateCode         String?   @db.VarChar(2)
+  reqMemo              String?   @db.VarChar(200)
+  adminId              String?   @db.VarChar(20)
+  productType          String    @db.VarChar(20)
+  refId                String    @db.VarChar(20)
+  productClass         String?   @db.VarChar(6)
+  useEndDate           String?   @default("99991231") @db.VarChar(8)
+  eventProductCode     String?   @db.VarChar(100)
+  recommendCode        String?   @db.VarChar(45)
+  limitedNumber        String?   @db.VarChar(30)
+  productSN            String?   @db.VarChar(1000)
+  deliverState         String?   @db.VarChar(2)
+  deliverNumber        String?   @db.VarChar(100)
+  deliverEndDate       DateTime? @db.DateTime(0)
+  parcelCompanyCode    String?   @db.VarChar(2)
+  registDt             DateTime? @db.DateTime(0)
+  overseaDeliveryPrice Int?      @default(0)
+
+  @@index([payid], map: "fk_payDetail_payinfo1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model payinfo {
+  payid                Int           @id @default(autoincrement())
+  payDate              DateTime?     @db.DateTime(0)
+  totalPrice           Int?
+  payMethod            String?       @db.VarChar(20)
+  payStateCode         String?       @db.VarChar(2)
+  pgTxNumber           String?       @db.VarChar(100)
+  payTxNumber          String?       @db.VarChar(45)
+  authDate             DateTime?     @db.DateTime(0)
+  notUserPay           String?       @db.VarChar(1)
+  userId               Int?
+  buyUserName          String?       @db.VarChar(200)
+  buyMobileNumber      String?       @db.VarChar(100)
+  receiveName          String?       @db.VarChar(200)
+  buyerEmail           String?       @db.VarChar(200)
+  buyNumber            String?       @db.VarChar(100)
+  receiveAddress       String?       @db.VarChar(500)
+  receiveDetailAddress String?       @db.VarChar(500)
+  receiveZipCode       String?       @db.VarChar(50)
+  receiveMobileNumber  String?       @db.VarChar(100)
+  receiveNumber        String?       @db.VarChar(100)
+  payMemo              String?       @db.Text
+  resultCode           String?       @db.VarChar(45)
+  resultMsg            String?       @db.VarChar(100)
+  payPassword          String?       @db.VarChar(200)
+  parentsPayid         Int?
+  cancelTid            String?       @db.VarChar(100)
+  cancelDt             DateTime?     @db.DateTime(0)
+  pgFee                Decimal?      @db.Decimal(6, 2)
+  resellerNo           Int?
+  deliveryCountry      String?       @default("한국") @db.VarChar(100)
+  payMethodName        String?       @db.VarChar(100)
+  resellerinfo         resellerinfo? @relation(fields: [resellerNo], references: [resellerNo], onDelete: Restrict, onUpdate: Restrict, map: "fk_payinfo_reseller")
+
+  @@index([resellerNo], map: "fk_payinfo_reseller")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model payrefund {
+  payRefundId         Int       @id @default(autoincrement())
+  businessAccount     String?   @db.VarChar(200)
+  businessBankName    String?   @db.VarChar(45)
+  businessUserName    String?   @db.VarChar(45)
+  payid               Int
+  requestTp           String?   @db.VarChar(1)
+  requestDt           DateTime? @db.DateTime(0)
+  requestMemo         String?   @db.TinyText
+  requestAdminId      String?   @db.VarChar(20)
+  confirmTp           String?   @db.VarChar(2)
+  confirmStartDt      DateTime? @db.DateTime(0)
+  confirmAdminId      String?   @db.VarChar(20)
+  returnDeliverNumber String?   @db.VarChar(100)
+  returnAddress       String?   @db.VarChar(500)
+  returnDetailAddress String?   @db.VarChar(500)
+  returnZipCode       String?   @db.VarChar(50)
+  returnMobileNumber  String?   @db.VarChar(100)
+  returnMemo          String?   @db.TinyText
+  returnReceiveName   String?   @db.VarChar(100)
+  orgDeliverNumber    String?   @db.VarChar(100)
+  finishDt            DateTime? @db.DateTime(0)
+  finishAdminId       String?   @db.VarChar(20)
+
+  @@index([payid], map: "fk_payRefund_payinfo1_idx")
+}
+
+model pre_order {
+  seq           Int     @id @default(autoincrement())
+  order_name    String? @db.VarChar(20)
+  order_phone   String? @db.VarChar(20)
+  order_email   String? @db.VarChar(100)
+  order_content String? @db.VarChar(1000)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model product {
+  productCode      String       @id @db.VarChar(10)
+  productName      String?      @db.VarChar(100)
+  productClassCode String       @db.VarChar(6)
+  costPrice        Int?
+  salePrice        Int?
+  saleCount        Int?
+  feeType          String?      @db.VarChar(2)
+  feePrice         Int?
+  feeRate          String?      @db.VarChar(5)
+  refTableName     String?      @db.VarChar(50)
+  refId            String?      @db.VarChar(45)
+  activeYN         String?      @db.VarChar(1)
+  registerID       String?      @db.VarChar(20)
+  registDt         DateTime?    @db.DateTime(0)
+  authYN           String?      @db.VarChar(1)
+  authID           String?      @db.VarChar(20)
+  authDate         DateTime?    @db.DateTime(0)
+  rejectReason     String?      @db.VarChar(200)
+  productInfo      String?      @db.Text
+  productclass     productclass @relation(fields: [productClassCode], references: [productClassCode], onDelete: NoAction, onUpdate: NoAction, map: "fk_Product_productClass1")
+
+  @@index([productClassCode], map: "fk_Product_productClass1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model product_lang {
+  productCode String    @db.VarChar(10)
+  lang        String    @db.VarChar(200)
+  productName String?   @db.VarChar(100)
+  productInfo String?   @db.Text
+  registerID  String?   @db.VarChar(20)
+  registDt    DateTime? @db.DateTime(0)
+
+  @@id([productCode, lang])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model productclass {
+  productClassCode  String    @id @db.VarChar(6)
+  productClassName  String?   @db.VarChar(45)
+  productClassDesc  String?   @db.VarChar(200)
+  productClassOrder Int?
+  registDt          DateTime? @default(now()) @db.DateTime(0)
+  useYN             String?   @default("Y") @db.Char(1)
+  product           product[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model productclass_lang {
+  productClassCode String    @db.VarChar(6)
+  lang             String    @db.VarChar(200)
+  productClassName String?   @db.VarChar(45)
+  productClassDesc String?   @db.VarChar(200)
+  registDt         DateTime? @db.DateTime(0)
+
+  @@id([productClassCode, lang])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model productcode {
+  productCode  String         @id @db.VarChar(20)
+  productName  String?        @db.VarChar(100)
+  costPrice    Int?
+  salePrice    Int?
+  registDt     DateTime?      @db.DateTime(0)
+  productorder productorder[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model productimgfile {
+  productImgFileId Int     @id @unique(map: "productImgFileId_UNIQUE")
+  imgName          String  @db.VarChar(100)
+  imgPath          String  @db.VarChar(255)
+  imgSize          Int?
+  mainYn           String  @default("N") @db.VarChar(1)
+  productCode      String? @db.VarChar(10)
+  thumnailYN       String? @default("N") @db.VarChar(1)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model productoption {
+  productOptionId Int    @id @unique(map: "productOption_UNIQUE") @default(autoincrement())
+  optiontName     String @db.VarChar(20)
+  optionValue     String @db.VarChar(45)
+  productCode     String @db.VarChar(10)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model productorder {
+  orderSeq             Int                         @id @default(autoincrement())
+  productCode          String                      @db.VarChar(20)
+  productType          String                      @db.VarChar(2)
+  orderCnt             Int
+  visitInstalled       productorder_visitInstalled
+  sendName             String                      @db.VarChar(50)
+  sendPhoneNum         String                      @db.VarChar(20)
+  sendEmail            String                      @db.VarChar(50)
+  reciveName           String                      @db.VarChar(50)
+  recivePhoneNum       String                      @db.VarChar(20)
+  reciveTel            String                      @db.VarChar(20)
+  reciveZipCode        String                      @db.VarChar(10)
+  reciveAddress        String                      @db.VarChar(200)
+  reciveAddressDetail  String                      @db.VarChar(200)
+  orderStatus          String                      @db.VarChar(20)
+  payPrice             Int?
+  payMethod            String?                     @db.VarChar(20)
+  payTransactionNumber String?                     @db.VarChar(100)
+  payDate              DateTime?                   @db.DateTime(0)
+  productcode          productcode                 @relation(fields: [productCode], references: [productCode], onUpdate: Restrict, map: "fk_productCode_han")
+
+  @@index([productCode], map: "fk_productCode_han")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pushinfo {
+  pushNo                Int       @id @default(autoincrement()) @db.UnsignedInt
+  pushType              String?   @db.VarChar(1)
+  pushTitle             String?   @db.VarChar(500)
+  pushMsg               String?   @db.VarChar(1000)
+  actionType            String?   @db.VarChar(1)
+  actionParam           String?   @db.VarChar(200)
+  targetType            String?   @db.VarChar(1)
+  targetCondition1      String?   @db.VarChar(1)
+  targetConditionValue1 String?   @db.VarChar(100)
+  targetCondition2      String?   @db.VarChar(1)
+  targetConditionValue2 String?   @db.VarChar(100)
+  filePath              String?   @db.VarChar(100)
+  sendReqDt             String?   @db.VarChar(12)
+  sendAuthDt            DateTime? @db.DateTime(0)
+  sendAuthAdminId       String?   @db.VarChar(20)
+  regDt                 DateTime? @db.DateTime(0)
+  regAdminId            String?   @db.VarChar(20)
+  updDt                 DateTime? @db.DateTime(0)
+  updAdminId            String?   @db.VarChar(20)
+  delDt                 DateTime? @db.DateTime(0)
+  delAdminId            String?   @db.VarChar(20)
+  sendStartDt           DateTime? @db.DateTime(0)
+  sendEndDt             DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pushinfo_lang {
+  pushNo     Int       @db.UnsignedInt
+  lang       String    @default("") @db.VarChar(200)
+  pushTitle  String?   @db.VarChar(500)
+  pushMsg    String?   @db.VarChar(1000)
+  regDt      DateTime? @db.DateTime(0)
+  regAdminId String?   @db.VarChar(20)
+  updDt      DateTime? @db.DateTime(0)
+  updAdminId String?   @db.VarChar(20)
+
+  @@id([pushNo, lang])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pushtarget {
+  pushTargetNo  Int       @id @default(autoincrement()) @db.UnsignedInt
+  pushNo        Int
+  userId        Int
+  sendStatus    String?   @db.VarChar(1)
+  sendRegDt     DateTime? @db.DateTime(0)
+  sendStartDt   DateTime? @db.DateTime(0)
+  sendEndDt     DateTime? @db.DateTime(0)
+  sendStatusMsg String?   @db.VarChar(500)
+
+  @@unique([pushNo, userId], map: "uk1_pushtarget")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model qna {
+  qnaId          Int       @id @default(autoincrement())
+  qnaTitle       String?   @db.VarChar(100)
+  qnaContent     String?   @db.Text
+  registDt       DateTime? @db.DateTime(0)
+  userId         Int
+  adminId        String?   @db.VarChar(20)
+  replyDt        String?   @db.VarChar(45)
+  replyContent   String?   @db.Text
+  replyState     String?   @db.VarChar(40)
+  categoryCode   String?   @db.VarChar(4)
+  publicYn       String    @default("N") @db.VarChar(1)
+  readCnt        Int?
+  qnaPassword    String?   @db.VarChar(45)
+  qnaPhoneNumber String?   @db.VarChar(20)
+  userinfo       userinfo  @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_qna_userinfo1")
+
+  @@index([adminId], map: "fk_qna_admin1_idx")
+  @@index([userId], map: "fk_qna_userinfo1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model recommendcollection {
+  recommendCollectionId Int       @id @unique(map: "recommendCollectionId_UNIQUE") @default(autoincrement())
+  recommendName         String    @db.VarChar(150)
+  userId                Int
+  recommendOrder        Int?
+  registDt              DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model recommendcollectionfile {
+  recommendCollectionFileId Int  @id @unique(map: "recommendCollectionFileId_UNIQUE") @default(autoincrement())
+  contentFileId             Int
+  recommendCollectionId     Int
+  fileOrder                 Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model resellerinfo {
+  resellerNo          Int       @id @default(autoincrement())
+  resellerNm          String?   @db.VarChar(255)
+  resellerCd          String?   @db.VarChar(255)
+  resellerTp          String?   @db.VarChar(1)
+  resellerBusinessTp  String?   @db.VarChar(255)
+  resellerBusinessNum String?   @db.VarChar(255)
+  resellerMngrNm      String?   @db.VarChar(255)
+  resellerEmail       String?   @db.VarChar(255)
+  resellerTel         String?   @db.VarChar(255)
+  regDt               DateTime? @db.DateTime(0)
+  regAdminId          String?   @db.VarChar(20)
+  updDt               DateTime? @db.DateTime(0)
+  updAdminId          String?   @db.VarChar(20)
+  delDt               DateTime? @db.DateTime(0)
+  delAdminId          String?   @db.VarChar(20)
+  payinfo             payinfo[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model salesinfo {
+  salesId               Int                              @id @default(autoincrement())
+  userId                Int
+  mobileNumber          String?                          @db.VarChar(20)
+  userAuthKey           String?                          @db.VarChar(100)
+  businessType          String?                          @db.VarChar(20)
+  businessName          String?                          @db.VarChar(50)
+  representName         String?                          @db.VarChar(20)
+  businessAddress       String?                          @db.VarChar(100)
+  businessAddressDetail String?                          @db.VarChar(100)
+  businessZipCode       String?                          @db.VarChar(5)
+  companyRegNumber      String?                          @db.VarChar(45)
+  businessKind          String?                          @db.VarChar(20)
+  businessAccount       String?                          @db.VarChar(200)
+  businessBankName      String?                          @db.VarChar(45)
+  businessBankCode      String?                          @db.VarChar(4)
+  registDt              DateTime?                        @db.DateTime(0)
+  businessAccountAuthYN salesinfo_businessAccountAuthYN?
+  accountAuthDt         DateTime?                        @db.DateTime(0)
+  adminId               String?                          @db.VarChar(20)
+  attachFilePath        String?                          @db.VarChar(255)
+  attachFileName        String?                          @db.VarChar(100)
+  recommendOrder        Int?
+  accountOwner          String?                          @db.VarChar(100)
+  sellerDesc            String?                          @db.Text
+  businessEmail         String?                          @db.VarChar(100)
+  authDt                DateTime?                        @db.DateTime(0)
+  exitYn                String?                          @db.VarChar(1)
+  exitDt                DateTime?                        @db.DateTime(0)
+  sellerShareRatio      Decimal?                         @db.Decimal(5, 2)
+  restoreDt             DateTime?                        @db.DateTime(0)
+  authorinfo            authorinfo[]
+  admin                 admin?                           @relation(fields: [adminId], references: [adminId], onDelete: NoAction, onUpdate: NoAction, map: "fk_salesInfo_admin1")
+  userinfo              userinfo                         @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_salesInfo_userinfo1")
+
+  @@index([adminId], map: "fk_salesInfo_admin1_idx")
+  @@index([userId], map: "fk_salesInfo_userinfo1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model salesinfo_lang {
+  salesId               Int
+  lang                  String    @default("") @db.VarChar(200)
+  businessName          String?   @db.VarChar(50)
+  representName         String?   @db.VarChar(20)
+  businessAddress       String?   @db.VarChar(100)
+  businessAddressDetail String?   @db.VarChar(100)
+  sellerDesc            String?   @db.Text
+  registDt              DateTime? @db.DateTime(0)
+  updDt                 DateTime? @db.DateTime(0)
+  registAdminId         String?   @db.VarChar(50)
+  updAdminId            String?   @db.VarChar(50)
+
+  @@id([salesId, lang])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model schedule {
+  schedule_id                    BigInt                           @id @default(autoincrement())
+  company_id                     BigInt?
+  user_id                        Int?
+  schedule_type                  String                           @db.VarChar(100)
+  schedule_name                  String                           @db.VarChar(200)
+  description                    String?                          @db.VarChar(1000)
+  subtitle                       String?                          @db.VarChar(1000)
+  iteration                      String?                          @db.VarChar(100)
+  target_scope                   String?                          @db.VarChar(100)
+  display_type                   String?                          @db.VarChar(100)
+  start_date                     DateTime                         @default(now()) @db.DateTime(0)
+  end_date                       DateTime?                        @db.DateTime(0)
+  execute_start                  String?                          @default("") @db.VarChar(100)
+  execute_end                    String?                          @db.VarChar(100)
+  execute_day                    String?                          @db.VarChar(100)
+  command                        String?                          @db.VarChar(100)
+  template_yn                    String                           @default("N") @db.Char(1)
+  template_id                    BigInt?
+  template_time                  String?                          @default("00:10") @db.VarChar(100)
+  template_rotation              String?                          @default("R") @db.Char(1)
+  collection_id                  BigInt?
+  my_collection_id               Int?
+  content_file_id                Int?
+  manage_type                    String                           @default("U") @db.Char(1)
+  manage_yn                      String                           @default("N") @db.Char(1)
+  manage_default_yn              String                           @default("N") @db.Char(1)
+  schedule_mapping               schedule_mapping[]
+  schedule_template_mapping      schedule_template_mapping[]
+  schedule_template_mapping_0921 schedule_template_mapping_0921[]
+
+  @@index([company_id], map: "company_id")
+  @@index([my_collection_id], map: "my_collection_id")
+  @@index([company_id], map: "schedule_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model schedule_0921 {
+  schedule_id       BigInt    @id @default(autoincrement())
+  company_id        BigInt?
+  user_id           Int?
+  schedule_type     String    @db.VarChar(100)
+  schedule_name     String    @db.VarChar(200)
+  description       String?   @db.VarChar(1000)
+  subtitle          String?   @db.VarChar(1000)
+  iteration         String?   @db.VarChar(100)
+  target_scope      String?   @db.VarChar(100)
+  display_type      String?   @db.VarChar(100)
+  start_date        DateTime  @default(now()) @db.DateTime(0)
+  end_date          DateTime? @db.DateTime(0)
+  execute_start     String?   @default("") @db.VarChar(100)
+  execute_end       String?   @db.VarChar(100)
+  execute_day       String?   @db.VarChar(100)
+  command           String?   @db.VarChar(100)
+  template_yn       String    @default("N") @db.Char(1)
+  template_id       BigInt?
+  template_time     String?   @default("00:10") @db.VarChar(100)
+  template_rotation String?   @default("R") @db.Char(1)
+  collection_id     BigInt?
+  my_collection_id  Int?
+  content_file_id   Int?
+  manage_type       String    @default("U") @db.Char(1)
+  manage_yn         String    @default("N") @db.Char(1)
+  manage_default_yn String    @default("N") @db.Char(1)
+
+  @@index([my_collection_id], map: "my_collection_id")
+  @@index([company_id], map: "schedule_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model schedule_0925 {
+  schedule_id       BigInt    @id @default(autoincrement())
+  company_id        BigInt?
+  user_id           Int?
+  schedule_type     String    @db.VarChar(100)
+  schedule_name     String    @db.VarChar(200)
+  description       String?   @db.VarChar(1000)
+  subtitle          String?   @db.VarChar(1000)
+  iteration         String?   @db.VarChar(100)
+  target_scope      String?   @db.VarChar(100)
+  display_type      String?   @db.VarChar(100)
+  start_date        DateTime  @default(now()) @db.DateTime(0)
+  end_date          DateTime? @db.DateTime(0)
+  execute_start     String?   @default("") @db.VarChar(100)
+  execute_end       String?   @db.VarChar(100)
+  execute_day       String?   @db.VarChar(100)
+  command           String?   @db.VarChar(100)
+  template_yn       String    @default("N") @db.Char(1)
+  template_id       BigInt?
+  template_time     String?   @default("00:10") @db.VarChar(100)
+  template_rotation String?   @default("R") @db.Char(1)
+  collection_id     BigInt?
+  my_collection_id  Int?
+  content_file_id   Int?
+  manage_type       String    @default("U") @db.Char(1)
+  manage_yn         String    @default("N") @db.Char(1)
+  manage_default_yn String    @default("N") @db.Char(1)
+
+  @@index([my_collection_id], map: "my_collection_id")
+  @@index([company_id], map: "schedule_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model schedule_mapping {
+  schedule_mapping_id BigInt   @id @default(autoincrement())
+  schedule_id         BigInt
+  sort                Int      @default(0)
+  target_type         Int      @default(0)
+  service_id          BigInt?  @default(0)
+  device_group_id     BigInt?  @default(0)
+  device_id           BigInt?  @default(0)
+  schedule            schedule @relation(fields: [schedule_id], references: [schedule_id], onDelete: Cascade, onUpdate: Restrict, map: "schedule_mapping_ibfk_1")
+
+  @@index([device_id], map: "device_id")
+  @@index([schedule_id], map: "schedule_mapping_FK")
+  @@index([service_id], map: "schedule_mapping_FK_1")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model schedule_mapping_0921 {
+  schedule_mapping_id BigInt  @id @default(autoincrement())
+  schedule_id         BigInt
+  sort                Int     @default(0)
+  target_type         Int     @default(0)
+  service_id          BigInt? @default(0)
+  device_group_id     BigInt? @default(0)
+  device_id           BigInt? @default(0)
+
+  @@index([device_id], map: "device_id")
+  @@index([schedule_id], map: "schedule_mapping_FK")
+  @@index([service_id], map: "schedule_mapping_FK_1")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model schedule_template_mapping {
+  schedule_template_mapping_id BigInt   @id @default(autoincrement())
+  schedule_id                  BigInt
+  sort                         Int      @default(0)
+  mime_type                    String   @default("image") @db.VarChar(100)
+  content_file_id              Int?
+  pay_kind                     String?  @default("N") @db.VarChar(1)
+  schedule                     schedule @relation(fields: [schedule_id], references: [schedule_id], onDelete: Cascade, onUpdate: Restrict, map: "schedule_template_mapping_ibfk_2")
+
+  @@index([schedule_id], map: "schedule_template_mapping_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model schedule_template_mapping_0921 {
+  schedule_template_mapping_id BigInt   @id @default(autoincrement())
+  schedule_id                  BigInt
+  sort                         Int      @default(0)
+  mime_type                    String   @default("image") @db.VarChar(100)
+  content_file_id              Int?
+  pay_kind                     String?  @default("N") @db.VarChar(1)
+  schedule                     schedule @relation(fields: [schedule_id], references: [schedule_id], onDelete: Cascade, onUpdate: Restrict, map: "schedule_template_mapping_0921_ibfk_1")
+
+  @@index([schedule_id], map: "schedule_template_mapping_FK")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model schedule_template_mapping_copy {
+  schedule_template_mapping_id BigInt  @id @default(autoincrement())
+  schedule_id                  BigInt
+  sort                         Int     @default(0)
+  mime_type                    String  @default("image") @db.VarChar(100)
+  content_file_id              Int?
+  pay_kind                     String? @default("N") @db.VarChar(1)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model searchkeyword {
+  searchKeyWordId Int     @id @default(autoincrement())
+  searchCategory  String? @db.VarChar(20)
+  searchValue     String? @db.VarChar(100)
+  count           Int     @default(0)
+}
+
+model sendmailhistory {
+  sendId        Int       @id
+  senderId      String    @db.VarChar(20)
+  receiveUserId Int?
+  formCode      String    @db.VarChar(4)
+  formName      String?   @db.VarChar(100)
+  title         String?   @db.VarChar(100)
+  contents      String?   @db.VarChar(1000)
+  attachFile1   String?   @db.VarChar(255)
+  attachFile2   String?   @db.VarChar(255)
+  attachFile3   String?   @db.VarChar(255)
+  sendDt        DateTime? @db.DateTime(0)
+
+  @@index([senderId], map: "fk_sendMailHistory_admin1_idx")
+  @@index([formCode], map: "fk_sendMailHistory_emailForms1_idx")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sitebrandseller {
+  siteBrandSellerNo Int @id @default(autoincrement())
+  siteManagementId  Int
+  salesId           Int
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sitemanagement {
+  siteManagementId     Int       @id @default(autoincrement())
+  siteMenuCode         String    @db.VarChar(2)
+  title                String    @db.VarChar(100)
+  description          String?   @db.Text
+  siteRank             Int?
+  thumImgUrl           String?   @db.VarChar(255)
+  bannerImgUrl         String?   @db.VarChar(255)
+  exhibitionArtistName String?   @db.VarChar(100)
+  exhibitionTerm       String?   @db.VarChar(50)
+  exhibitionPlace      String?   @db.VarChar(100)
+  useYN                String    @db.VarChar(1)
+  brandMarkimgUrl      String?   @db.VarChar(255)
+  section1title        String?   @db.VarChar(100)
+  section1desc         String?   @db.Text
+  section1imgUrl       String?   @db.VarChar(255)
+  section2title        String?   @db.VarChar(100)
+  section2desc         String?   @db.Text
+  section2_1imgUrl     String?   @db.VarChar(255)
+  section2_2imgUrl     String?   @db.VarChar(255)
+  section3title        String?   @db.VarChar(100)
+  section3desc         String?   @db.Text
+  section3imgUrl       String?   @db.VarChar(255)
+  section4title        String?   @db.VarChar(100)
+  section4desc         String?   @db.Text
+  section4imgUrl       String?   @db.VarChar(255)
+  appThumImgUrl        String?   @db.VarChar(255)
+  appBannertitle       String?   @db.VarChar(100)
+  appBannerdesc        String?   @db.Text
+  appBannerimgUrl      String?   @db.VarChar(255)
+  brandHomePage        String?   @db.VarChar(100)
+  brandAddress         String?   @db.VarChar(400)
+  brandSNS             String?   @db.VarChar(100)
+  addSection1title     String?   @db.VarChar(100)
+  addSection2title     String?   @db.VarChar(100)
+  addSection3title     String?   @db.VarChar(100)
+  addSection4title     String?   @db.VarChar(100)
+  addSection1desc      String?   @db.Text
+  addSection2desc      String?   @db.Text
+  addSection3desc      String?   @db.Text
+  addSection4desc      String?   @db.Text
+  addSection1imgUrl    String?   @db.VarChar(255)
+  addSection2imgUrl    String?   @db.VarChar(255)
+  addSection3imgUrl    String?   @db.VarChar(255)
+  addSection4imgUrl    String?   @db.VarChar(255)
+  registerID           String?   @db.VarChar(20)
+  registDt             DateTime? @db.DateTime(0)
+  updaterID            String?   @db.VarChar(20)
+  updateDt             DateTime? @db.DateTime(0)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sitemanagement_lang {
+  siteManagementId     Int
+  lang                 String    @db.VarChar(200)
+  title                String?   @db.VarChar(100)
+  description          String?   @db.Text
+  exhibitionArtistName String?   @db.VarChar(100)
+  exhibitionTerm       String?   @db.VarChar(50)
+  exhibitionPlace      String?   @db.VarChar(100)
+  section1title        String?   @db.VarChar(100)
+  section1desc         String?   @db.Text
+  section2title        String?   @db.VarChar(100)
+  section2desc         String?   @db.Text
+  section3title        String?   @db.VarChar(100)
+  section3desc         String?   @db.Text
+  section4title        String?   @db.VarChar(100)
+  section4desc         String?   @db.Text
+  appBannertitle       String?   @db.VarChar(100)
+  appBannerdesc        String?   @db.Text
+  appBannerimgUrl      String?   @db.VarChar(255)
+  brandHomePage        String?   @db.VarChar(100)
+  brandAddress         String?   @db.VarChar(400)
+  brandSNS             String?   @db.VarChar(100)
+  addSection1title     String?   @db.VarChar(100)
+  addSection2title     String?   @db.VarChar(100)
+  addSection3title     String?   @db.VarChar(100)
+  addSection4title     String?   @db.VarChar(100)
+  addSection1desc      String?   @db.Text
+  addSection2desc      String?   @db.Text
+  addSection3desc      String?   @db.Text
+  addSection4desc      String?   @db.Text
+  registerID           String?   @db.VarChar(20)
+  registDt             DateTime? @db.DateTime(0)
+  updaterID            String?   @db.VarChar(20)
+  updateDt             DateTime? @db.DateTime(0)
+
+  @@id([siteManagementId, lang])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sitemanagementcontents {
+  siteManageContentId Int @id @default(autoincrement())
+  siteManagementId    Int
+  contentId           Int
+}
+
+model snsinfo {
+  snsId    String    @db.VarChar(40)
+  userId   Int
+  snsType  String    @db.VarChar(20)
+  registDt DateTime? @db.DateTime(0)
+  userinfo userinfo  @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_SnsInfo_UserInfo")
+
+  @@id([snsId, snsType])
+  @@index([userId], map: "fk_SnsInfo_UserInfo_idx")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model streamingcnt {
+  contentId  Int
+  userId     Int
+  insertDate DateTime  @default(now()) @db.DateTime(0)
+  deleteDate DateTime? @db.DateTime(0)
+
+  @@ignore
+}
+
+model temp_copy {
+  tempMyNftId     Int      @id @default(autoincrement())
+  userId          Int?
+  nftTokenId      String?  @db.VarChar(50)
+  contentPath     String?  @db.VarChar(500)
+  thumbnailPath   String?  @db.VarChar(500)
+  contentType     String?  @db.VarChar(20)
+  originFileNm    String?  @db.VarChar(500)
+  saveFileNm      String?  @db.VarChar(100)
+  saveThumbFileNm String?  @db.VarChar(100)
+  registDt        DateTime @default(now()) @db.DateTime(0)
+  mimeType        String?  @db.VarChar(10)
+  contentFileSize Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model temp_mynft {
+  tempMyNftId     Int      @id @default(autoincrement())
+  userId          Int
+  nftTokenId      String?  @db.VarChar(50)
+  contentPath     String?  @default("") @db.VarChar(500)
+  thumbnailPath   String?  @default("") @db.VarChar(500)
+  contentType     String?  @db.VarChar(20)
+  originFileNm    String?  @db.VarChar(500)
+  saveFileNm      String?  @db.VarChar(100)
+  saveThumbFileNm String?  @db.VarChar(100)
+  registDt        DateTime @default(now()) @db.DateTime(0)
+  mimeType        String?  @db.VarChar(10)
+  contentFileSize Int?
+
+  @@index([nftTokenId], map: "nftTokenId")
+  @@index([userId], map: "userId")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model template {
+  template_id   Int     @id @default(autoincrement())
+  sort          Int
+  template_name String  @db.VarChar(100)
+  template_cnt  Int?
+  description   String? @db.VarChar(2000)
+  use_yn        String  @default("Y") @db.VarChar(100)
+  icon          String? @db.VarChar(1000)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model userinfo {
+  userId                              Int                            @id @unique(map: "userId_UNIQUE") @default(autoincrement())
+  email                               String?                        @unique(map: "email_UNIQUE") @db.VarChar(100)
+  password                            String?                        @db.VarChar(100)
+  nickname                            String?                        @unique(map: "nickname_UNIQUE") @db.VarChar(20)
+  userName                            String?                        @db.VarChar(45)
+  profileImgName                      String?                        @db.VarChar(100)
+  profileImgPath                      String?                        @db.VarChar(255)
+  profileImgSize                      Int?
+  profileImgType                      String?                        @db.VarChar(10)
+  pushMsgYN                           String?                        @default("Y") @db.VarChar(1)
+  searchYN                            String?                        @default("Y") @db.VarChar(1)
+  joinType                            userinfo_joinType?             @default(EMAIL)
+  emailConfirmYN                      userinfo_emailConfirmYN?       @default(N)
+  userAgreementYN                     userinfo_userAgreementYN?      @default(N)
+  useUserInfoAgreeYN                  userinfo_useUserInfoAgreeYN?   @default(N)
+  useUserInfoAgreeDt                  DateTime?                      @db.DateTime(0)
+  useServiceAgreeYN                   userinfo_useServiceAgreeYN?    @default(N)
+  useServiceAgreeDt                   DateTime?                      @db.DateTime(0)
+  usePayServiceAgreeYN                userinfo_usePayServiceAgreeYN? @default(N)
+  usePayServiceAgreeDt                DateTime?                      @db.DateTime(0)
+  gcmRegId                            String?                        @db.VarChar(200)
+  joinDt                              DateTime?                      @db.DateTime(0)
+  lastLoginDt                         DateTime?                      @db.DateTime(0)
+  salesUserYN                         String?                        @default("N") @db.VarChar(1)
+  userState                           String?                        @db.VarChar(45)
+  locale                              String?                        @default("ko") @db.VarChar(10)
+  area                                String?                        @db.VarChar(4)
+  sex                                 String?                        @db.VarChar(1)
+  birth                               String?                        @db.VarChar(8)
+  userGrade                           String?                        @default("default") @db.VarChar(10)
+  withdrawReason                      String?                        @db.VarChar(200)
+  mobileNumber                        String?                        @db.VarChar(15)
+  address                             String?                        @db.VarChar(200)
+  detailAddress                       String?                        @db.VarChar(200)
+  zipCode                             String?                        @db.VarChar(10)
+  humanDate                           DateTime?                      @db.DateTime(0)
+  withdrawDate                        DateTime?                      @db.DateTime(0)
+  maxDeviceCnt                        Int?                           @default(5)
+  maxCollectionCnt                    Int?                           @default(12)
+  useEndDate                          String?                        @db.VarChar(8)
+  appOs                               String?                        @db.VarChar(10)
+  lentalInfo                          String?                        @db.VarChar(20)
+  lentalContentYN                     userinfo_lentalContentYN?      @default(N)
+  joinRoute                           String?                        @db.VarChar(100)
+  streamingKind                       String?                        @db.Char(1)
+  usbYn                               userinfo_usbYn?                @default(N)
+  ktContainerId                       String?                        @db.VarChar(50)
+  instagramId                         String?                        @db.VarChar(20)
+  instagramAccessToken                String?                        @db.VarChar(100)
+  sizeUpEndDate                       DateTime?                      @db.Date
+  sizeUp                              Int?                           @default(0)
+  sizeUpYn                            userinfo_sizeUpYn?             @default(N)
+  newVersionYn                        userinfo_newVersionYn?         @default(N)
+  klipAddress                         String?                        @db.VarChar(255)
+  refreshToken                        String?                        @db.VarChar(200)
+  company_manager                     company_manager[]
+  company_user                        company_user[]
+  contents                            contents[]
+  contents_230905                     contents_230905[]
+  contentscomment                     contentscomment[]
+  contentslike                        contentslike[]
+  copyrightinfo                       copyrightinfo[]
+  device                              device[]
+  follow_follow_followerIdTouserinfo  follow[]                       @relation("follow_followerIdTouserinfo")
+  follow_follow_followingIdTouserinfo follow[]                       @relation("follow_followingIdTouserinfo")
+  mycollections                       mycollections[]
+  qna                                 qna[]
+  salesinfo                           salesinfo[]
+  snsinfo                             snsinfo[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model userwallet {
+  walletId      Int     @id @default(autoincrement())
+  userId        Int
+  walletAddress String  @default("") @db.VarChar(255)
+  walletType    String? @default("") @db.VarChar(4)
+  description   String? @default("") @db.VarChar(2000)
+  use_yn        String  @default("Y") @db.VarChar(100)
+  registDate    String? @default("") @db.VarChar(20)
+  deleteDate    String? @default("") @db.VarChar(20)
+}
+
+model webservers {
+  seq         Int       @id @default(autoincrement())
+  mac_address String    @db.VarChar(100)
+  client_id   String?   @db.VarChar(100)
+  host_name   String?   @db.VarChar(40)
+  regist_dt   DateTime? @db.DateTime(0)
+}
+
+enum aution_virtualYN {
+  Y
+  N
+}
+
+enum comcode_useYn {
+  Y
+  N
+}
+
+enum productorder_visitInstalled {
+  Y
+  N
+}
+
+enum biddinghistory_bidderYN {
+  Y
+  N
+}
+
+enum admin_suAdminYN {
+  Y
+  N
+}
+
+enum comcode_hiddenYn {
+  Y
+  N
+}
+
+enum contentsfile_uploadYN {
+  Y
+  N
+}
+
+enum contentsfile_copy_uploadYN {
+  Y
+  N
+}
+
+enum userinfo_joinType {
+  EMAIL
+  SNS_FB
+  SNS_INSTA
+  EMAIL_FB
+  EMAIL_INSTA
+  EMAIL_BOTH
+  SNS_BOTH
+  ADMIN_REG
+  NORMAL
+}
+
+enum userinfo_emailConfirmYN {
+  Y
+  N
+}
+
+enum contents_visible {
+  Y
+  N
+}
+
+enum contents_230905_visible {
+  Y
+  N
+}
+
+enum userinfo_userAgreementYN {
+  Y
+  N
+}
+
+enum contents_publicYN {
+  Y
+  N
+}
+
+enum contents_230905_publicYN {
+  Y
+  N
+}
+
+enum userinfo_useUserInfoAgreeYN {
+  Y
+  N
+}
+
+enum device_scheduleYN {
+  Y
+  N
+}
+
+enum salesinfo_businessAccountAuthYN {
+  Y
+  N
+}
+
+enum userinfo_useServiceAgreeYN {
+  Y
+  N
+}
+
+enum userinfo_usePayServiceAgreeYN {
+  Y
+  N
+}
+
+enum device_slideShowIntervalUnit {
+  sec
+  min
+  hour
+}
+
+enum aution_bidderIdConf {
+  Y
+  N
+}
+
+enum contents_confirmYN {
+  Y
+  N
+}
+
+enum contents_230905_confirmYN {
+  Y
+  N
+}
+
+enum userinfo_lentalContentYN {
+  Y
+  N
+}
+
+enum userinfo_usbYn {
+  Y
+  N
+}
+
+enum userinfo_sizeUpYn {
+  Y
+  N
+}
+
+enum userinfo_newVersionYn {
+  Y
+  N
+}

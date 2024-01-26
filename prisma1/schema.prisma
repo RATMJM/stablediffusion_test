@@ -1,0 +1,22 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+  referentialIntegrity = "prisma" // prisma 참조 무결성 기능 (키 사용 설정)
+}
+
+// Posting model 생성
+model Posting{
+  id Int @id @default(autoincrement()) // id (자동으로 증가하는 값으로 설정)
+  title String // title
+  content String // content
+  createdAt DateTime @default(now()) // 현재 시간을 설정
+  updatedAt DateTime @updatedAt // update된 시간을 설정
+} 
